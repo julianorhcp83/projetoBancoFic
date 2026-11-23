@@ -1,75 +1,35 @@
-# React + TypeScript + Vite
+# Consulta Bancária — Banestes
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação web desenvolvida em React, TypeScript e Vite para buscar, normalizar e consultar dados de clientes, contas e agências a partir de planilhas públicas do Google Sheets exportadas em CSV.
 
-Currently, two official plugins are available:
+## Como o projeto funciona
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Os dados vêm de três abas de planilha (`clientes`, `contas` e `agencias`) via `fetch` e são lidos com o PapaParse. Como os dados brutos da planilha podem ter variações de formatação, espaços extras ou formatos diferentes, o projeto separa o fluxo em etapas:
 
-## React Compiler
+- **Tipagem (`src/types/`):** define as estruturas de `Cliente`, `Conta` e `Agencia`.
+- **Busca e normalização (`src/services/`):** baixa os CSVs, faz o *parse* e padroniza campos como datas, valores numéricos, estado civil e tipo de conta.
+- **Formatação (`src/utils/`):** ajuda a formatar CPF/CNPJ, datas (`DD/MM/AAAA`), valores em moeda (`R$`) e limpar caracteres não numéricos na hora de buscar.
+- **Interface (`src/components/` e `src/App.tsx`):** exibe a listagem resumida com busca por nome ou CPF/CNPJ, filtros (como estado civil e agência), paginação de até **10 clientes por página** e o painel de detalhes com os dados completos do cliente, sua agência e suas contas.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tecnologias usadas
 
-## Expanding the ESLint configuration
+- React + TypeScript
+- Vite
+- PapaParse
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Como rodar o projeto localmente
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. Instale as dependências:
+   ```bash
+   npm install
+   ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+2. Inicie o servidor de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
-
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
+3. Para gerar o build de produção e conferir se está tudo compilando sem erros:
+   ```bash
+   npm run build
+   ```
