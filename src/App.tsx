@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { ClienteDetalhes } from "./components/ClienteDetalhes";
 import { ClienteLista } from "./components/ClienteLista";
 import { fetchDadosBanco, type DadosBanco } from "./services/bankApi";
 import type { Cliente } from "./types/bank";
@@ -39,35 +38,31 @@ function App() {
   }, []);
 
   return (
-    <main style={{ maxWidth: "960px", margin: "0 auto", padding: "2rem", fontFamily: "sans-serif" }}>
-      <h1>Consulta Bancária — Banestes</h1>
+    <main className="container py-4">
+      <h1 className="mb-4">Consulta Bancária — FicBank</h1>
 
-      {carregando && <p>Carregando dados da planilha...</p>}
+      {carregando && (
+        <div className="d-flex align-items-center gap-2 my-3">
+          <div className="spinner-border spinner-border-sm text-primary" role="status" />
+          <p className="mb-0">Carregando dados da planilha...</p>
+        </div>
+      )}
 
       {erro && (
-        <div role="alert" style={{ padding: "1rem", border: "1px solid red", borderRadius: "6px" }}>
+        <div role="alert" className="alert alert-danger">
           <strong>Erro ao carregar dados:</strong> {erro}
         </div>
       )}
 
       {!carregando && !erro && dados && (
-        <>
-          <ClienteLista
-            clientes={dados.clientes}
-            agencias={dados.agencias}
-            clienteSelecionadoId={clienteSelecionado?.id ?? null}
-            onSelecionarCliente={(cliente) => setClienteSelecionado(cliente)}
-          />
-
-          {clienteSelecionado && (
-            <ClienteDetalhes
-              cliente={clienteSelecionado}
-              contas={dados.contas}
-              agencias={dados.agencias}
-              onFechar={() => setClienteSelecionado(null)}
-            />
-          )}
-        </>
+        <ClienteLista
+          clientes={dados.clientes}
+          contas={dados.contas}
+          agencias={dados.agencias}
+          clienteSelecionadoId={clienteSelecionado?.id ?? null}
+          onSelecionarCliente={(cliente) => setClienteSelecionado(cliente)}
+          onFecharDetalhes={() => setClienteSelecionado(null)}
+        />
       )}
     </main>
   );
