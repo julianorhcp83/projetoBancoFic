@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CadastroCliente } from "./components/CadastroCliente";
 import { ClienteLista } from "./components/ClienteLista";
 import { fetchDadosBanco, type DadosBanco } from "./services/bankApi";
 import type { Cliente } from "./types/bank";
@@ -10,6 +11,7 @@ function App() {
   const [clienteSelecionado, setClienteSelecionado] = useState<Cliente | null>(null);
 
   useEffect(() => {
+    // flag p evitar att estado se o componente desmontar no meio do fetch
     let ativo = true;
 
     fetchDadosBanco()
@@ -36,6 +38,17 @@ function App() {
       ativo = false;
     };
   }, []);
+  // adiciona um novo cliente apenas na memoria (some com F5)
+  function AddCliente(novoCliente: Cliente) {
+    setDados((atual) => {
+      if (!atual) return atual;
+      return {
+        ...atual,
+        clientes: [novoCliente, ...atual.clientes],
+      };
+    });
+    setClienteSelecionado(novoCliente);
+  }
 
   return (
     <main className="container py-4">
@@ -55,14 +68,21 @@ function App() {
       )}
 
       {!carregando && !erro && dados && (
-        <ClienteLista
-          clientes={dados.clientes}
-          contas={dados.contas}
-          agencias={dados.agencias}
-          clienteSelecionadoId={clienteSelecionado?.id ?? null}
-          onSelecionarCliente={(cliente) => setClienteSelecionado(cliente)}
-          onFecharDetalhes={() => setClienteSelecionado(null)}
-        />
+        <>
+          <CadastroCliente
+            agencias={dados.agencias}
+            onAdicionarCliente={AddCliente}
+          />
+
+          <ClienteLista
+            clientes={dados.clientes}
+            contas={dados.contas}
+            agencias={dados.agencias}
+            clienteSelecionadoId={clienteSelecionado?.id ?? null}
+            onSelecionarCliente={(cliente) => setClienteSelecionado(cliente)}
+            onFecharDetalhes={() => setClienteSelecionado(null)}
+          />
+        </>
       )}
     </main>
   );
