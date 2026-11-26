@@ -2,6 +2,7 @@ import type { Agencia, Cliente, Conta, EstadoCivil, t_Conta} from "../types/bank
 
 type linhaCSV = Record<string, string | undefined>;
 
+//limpa espacos e deixa as chaves em minusc para evitar erros
 function mapearCampos(linha: linhaCSV): Record<string, string>{
     const result: Record<string, string> = {};
 
@@ -17,6 +18,7 @@ function mapearCampos(linha: linhaCSV): Record<string, string>{
     return result;
 }
 
+// tenta achar o valor da coluna testando variacoes possiveis do nome
 function pegarCampo(campos: Record<string, string>, chavesPossiveis: string[]): string{
     for (const chave of chavesPossiveis){
         const achou = campos[chave.toLowerCase()];
@@ -28,6 +30,7 @@ function pegarCampo(campos: Record<string, string>, chavesPossiveis: string[]): 
     return "";
 }
 
+//converte string monetaria ou numerica para number
 function parseNumero(valor: string): number {
     if(!valor) return 0;
 
@@ -44,6 +47,7 @@ function parseNumero(valor: string): number {
 
 }
 
+//aceita datas no padrao dd/mm/aaaa ou iso e transforma em Date
 function parseData(valor: string): Date {
     if(!valor) return new Date(0);
 
@@ -59,6 +63,7 @@ function parseData(valor: string): Date {
     return Number.isNaN(data.getTime()) ? new Date(0) : data;
 }
 
+//padroniza o estaod civil pra bater com a union type da interface Cliente
 function normalizarEstadoCivil(valor: string): EstadoCivil {
   const texto = valor.toLowerCase();
 
@@ -68,6 +73,7 @@ function normalizarEstadoCivil(valor: string): EstadoCivil {
   return "Solteiro";
 }
 
+//normaliza o tipo da conta removendo acento (ex: poupança -> poupanca)
 function normalizarTipoConta(valor: string): t_Conta {
   const texto = valor
     .toLowerCase()
@@ -78,6 +84,7 @@ function normalizarTipoConta(valor: string): t_Conta {
   return "corrente";
 }
 
+//transforma as linhas do CSV em obj. Cliente ja tipados
 export function normalizarClientes(linhas: linhaCSV[]): Cliente[] {
   return linhas
     .map((linha, indice) => {
@@ -85,7 +92,8 @@ export function normalizarClientes(linhas: linhaCSV[]): Cliente[] {
       const id = pegarCampo(c, ["id"]) || `cliente-${indice + 1}`;
       const cpfCnpj = pegarCampo(c, ["cpfcnpj", "cpf_cnpj", "cpf/cnpj", "cpf"]);
       const nome = pegarCampo(c, ["nome", "nomecompleto", "nome_completo"]);
-
+      
+      //ignora linha vazia ou sem identificacao minima
       if (!nome && !cpfCnpj) return null;
 
       const rg = pegarCampo(c, ["rg"]);
@@ -117,6 +125,7 @@ export function normalizarClientes(linhas: linhaCSV[]): Cliente[] {
     .filter((item): item is Cliente => item !== null);
 }
 
+////transforma as linhas do CSV em obj. Conta tipados
 export function normalizarContas(linhas: linhaCSV[]): Conta[] {
   return linhas
     .map((linha, indice) => {
@@ -149,6 +158,7 @@ export function normalizarContas(linhas: linhaCSV[]): Conta[] {
     .filter((item): item is Conta => item !== null);
 }
 
+//transforma as linhas do CSV em obj. Agencia tipados
 export function normalizarAgencias(linhas: linhaCSV[]): Agencia[] {
   return linhas
     .map((linha, indice) => {

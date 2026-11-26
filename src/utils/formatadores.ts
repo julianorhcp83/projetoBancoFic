@@ -1,8 +1,9 @@
+///remove tudo que nao for numero (comparar e buscar cpf/cnpj)
 export function apenasDigitos(valor: string): string {
   return valor.replace(/\D/g, "");
 }
 
-
+//aplica mascara de cpf(11 dig.) ou cnpj(14 dig.)
 export function formatarCpfCnpj(valor: string): string {
   const digitos = apenasDigitos(valor);
 
@@ -20,7 +21,7 @@ export function formatarCpfCnpj(valor: string): string {
   return valor;
 }
 
-
+//formata obj Date para padrao BR (dd/mm/aaaa)
 export function formatarData(data: Date): string {
   if (!(data instanceof Date) || Number.isNaN(data.getTime()) || data.getTime() === 0) {
     return "Não informada";
@@ -33,7 +34,7 @@ export function formatarData(data: Date): string {
   });
 }
 
-
+// formata valores numericos em reais (R$)
 export function formatarMoeda(valor: number): string {
   const seguro = Number.isFinite(valor) ? valor : 0;
 

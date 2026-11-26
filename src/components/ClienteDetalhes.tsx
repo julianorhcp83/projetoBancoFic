@@ -17,11 +17,13 @@ export function ClienteDetalhes({
   contas,
   agencias,
 }: ClienteDetalhesProps) {
+  //compara apenas pelos digitos caso um for formatado e outro nao
   const cpfClienteDigitos = apenasDigitos(cliente.cpfCnpj);
   const contasDoCliente = contas.filter(
     (conta) => apenasDigitos(conta.cpfCnpjCliente) === cpfClienteDigitos
   );
 
+  //busca a agencia vinculada ao cliente pelo codigo
   const agenciaDoCliente = agencias.find(
     (agencia) => agencia.codigo === cliente.codigoAgencia
   );

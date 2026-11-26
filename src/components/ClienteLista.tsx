@@ -3,6 +3,7 @@ import type { Agencia, Cliente, Conta, EstadoCivil } from "../types/bank";
 import { apenasDigitos, formatarCpfCnpj } from "../utils/formatadores";
 import { ClienteDetalhes } from "./ClienteDetalhes";
 
+//max de 10 clientes por pagina
 const ITENS_POR_PAG = 10;
 
 interface ClienteListaProps {
@@ -27,6 +28,7 @@ export function ClienteLista({
   const [agenciaFiltro, setAgenciaFiltro] = useState<string>("todas");
   const [paginaAtual, setPaginaAtual] = useState(1);
 
+  //indexa agencias por codigo
   const mapaAgencias = useMemo(() => {
     const mapa = new Map<number, Agencia>();
     for (const agencia of agencias) {
@@ -35,6 +37,7 @@ export function ClienteLista({
     return mapa;
   }, [agencias]);
 
+  //filtro por nome, nome social, cpf/cnpj, estado civil e agencia
   const clientesFiltrados = useMemo(() => {
     const termoTexto = busca.trim().toLowerCase();
     const termoDigitos = apenasDigitos(busca);
@@ -59,6 +62,7 @@ export function ClienteLista({
     });
   }, [clientes, busca, estadoCivilFiltro, agenciaFiltro]);
 
+  //volta pra pagina 1 smp que algum filtro muda
   useEffect(() => {
     setPaginaAtual(1);
   }, [busca, estadoCivilFiltro, agenciaFiltro]);
